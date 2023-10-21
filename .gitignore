@@ -24,6 +24,7 @@ TestResult.xml
 [Rr]eleasePS/
 dlldata.c
 
+*_junction
 *_i.c
 *_p.c
 *_i.h
