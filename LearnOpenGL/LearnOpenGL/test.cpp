@@ -5,7 +5,7 @@
 #include <GLFW/glfw3.h>
 #include <iostream>
 
-
+void processInput(GLFWwindow* window);
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 
 int main()
@@ -55,6 +55,26 @@ int main()
 	// Check if the window was closed
 	while (!glfwWindowShouldClose(window))
 	{
+		// Call the input process every render frame
+		processInput(window);
+
+		// Rendering commands here...
+
+		// Set the clear color buffer bit color
+		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+		// Then clear the Color buffer bit of the screen to apply the new color
+		glClear(GL_COLOR_BUFFER_BIT);
+
+		/*
+		* 'glClearColor' is a state-setting function <-- it sets things
+		* 'glClear' is a state-using function <-- it uses previous set things
+		*/
+
+		// Possible buffer bits: 
+		// * GL_COLOR_BUFFER_BIT 
+		// * GL_DEPTH_BUFFER_BIT 
+		// * GL_STENCIL_BUFFER_BIT
+
 		// Swaps the color buffer
 		// OpenGL works with Double Buffer
 		// * The first\front buffer shows the final image
@@ -74,6 +94,20 @@ int main()
 
 	return 0;
 }
+
+/*!
+* Process user's input
+*/
+void processInput(GLFWwindow* window)
+{
+	// If the user is pressing ESCAPE
+	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+	{
+		// Set the "WindowShouldClose" to true, thus breaking the render loop
+		glfwSetWindowShouldClose(window, true);
+	}
+}
+
 
 /*!
 * Method used as callback every time the GLFW window is resized
