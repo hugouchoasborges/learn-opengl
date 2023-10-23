@@ -5,6 +5,8 @@
 #include <GLFW/glfw3.h>
 #include <iostream>
 
+#define __WIREFRAME__
+
 // Prototypes
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow* window);
@@ -168,9 +170,14 @@ int main()
 	//      ------------------
 
 	float vertices[] = {
-		-0.5f, -0.5f, 0.0f,
-		0.5f, -0.5f, 0.0f,
-		0.0f, 0.5f, 0.0f,
+		0.5f, 0.5f, 0.0f, // top right
+		0.5f, -0.5f, 0.0f, // bottom right
+		-0.5f, -0.5f, 0.0f, // bottom left
+		-0.5f, 0.5f, 0.0f // top left
+	};
+	unsigned int indices[] = { // note that we start from 0!
+		0, 1, 3, // first triangle
+		1, 2, 3 // second triangle
 	};
 
 	// Unique ID corresponding to the vertex array object (VAO)
@@ -186,6 +193,9 @@ int main()
 
 	// Binding the VAO -- From now on, we should configure the VBO(s) that go/goes inside it
 	// And then unbind the VAO for later use
+
+	// bind the Vertex Array Object first, then bind and set vertex buffer(s), and then configure vertex attributes(s).
+	glBindVertexArray(VAO);
 
 	// Unique ID corresponding to the vertex buffer object (VBO) we have to use 
 	// in order to allocate memory in the GPU
@@ -211,8 +221,15 @@ int main()
 	// It's VERY IMPORTANT to use the correct GLEnum type, because if you tell opengl that your data is
 	// going to change a lot (GL_DYNAMIC_DRAW) then it'll write your data in a faster memory
 
-	// bind the Vertex Array Object first, then bind and set vertex buffer(s), and then configure vertex attributes(s).
-	glBindVertexArray(VAO);
+
+	// Create Element Buffer Object
+	// * Responsible for enabling Indexed Drawing -- It stores indices that OpenGL uses to decice what vertices to draw
+	unsigned int EBO;
+	glGenBuffers(1, &EBO);
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
 
 	// ------ Linking the vertex attributes -------
 	//      -------------------------------
@@ -252,6 +269,10 @@ int main()
 	// VAOs requires a call to glBindVertexArray anyways so we generally don't unbind VAOs (nor VBOs) when it's not directly necessary.
 	glBindVertexArray(0);
 
+#ifdef __WIREFRAME__
+	// Draw using wireframes
+	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+#endif
 
 	// ------ THE RENDER LOOP
 	// Check if the window was closed
@@ -286,7 +307,12 @@ int main()
 		// From now on, every rendering call will use this program (thus its shaders)
 
 		// Render the triangle
-		glDrawArrays(GL_TRIANGLES, 0, 3);
+		//glDrawArrays(GL_TRIANGLES, 0, 3);
+
+		// Render elements <--- Render triangles from an index buffer
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+		glDrawElements(GL_TRIANGLES, sizeof(vertices), GL_UNSIGNED_INT, 0);
+
 
 
 		// Swaps the color buffer
