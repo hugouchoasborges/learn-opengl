@@ -132,6 +132,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="3.2.shaders_interpolation.cpp" />
     <ClCompile Include="glad.c" />
     <ClCompile Include="test.cpp" />
   </ItemGroup>
