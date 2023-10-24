@@ -5,7 +5,7 @@
 #include <GLFW/glfw3.h>
 #include <iostream>
 
-#define __WIREFRAME__
+//#define __WIREFRAME__
 
 // Prototypes
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
@@ -26,9 +26,10 @@ const char* vertexShaderSource =
 const char* fragmentShaderSource =
 "#version 330 core\n"
 "out vec4 FragColor;\n"
+"uniform vec4 ourColor;\n"
 "void main()\n"
 "{\n"
-" FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);" // Fixed orange-ish color
+" FragColor = ourColor;" // Fixed orange-ish color
 "}\n"
 "";
 
@@ -302,6 +303,22 @@ int main()
 
 		// Now that the shaderProgram is created and linked, we can use it
 		glUseProgram(shaderProgram);
+
+		// Testing some uniform colors over time
+		float timeValue = glfwGetTime(); // Get current time in seconds
+		float greenValue = (sin(timeValue) / 2.0f) + 0.6f; // Value between 0.0f and 1.0f
+		int vertexColorLocation = glGetUniformLocation(shaderProgram, "ourColor"); // Find the uniform parameter location\index
+		// glGetUniformLocation can return -1, indicating the uniform wasn't found
+
+		// Now set a new value to the uniform shader attribute
+		glUniform4f(vertexColorLocation, 0.0f, greenValue, 0.0f, 1.0f);
+		// Notice the OpenGL doesn't support overload (raw C)
+		// So it adds suffix to its methods to point what types are used in the parameters:
+		// * f : the function expects a float as its value.
+		// * i : the function expects an int as its value.
+		// * ui : the function expects an unsigned int as its value.
+		// * 3f : the function expects 3 floats as its value.
+		// * fv : the function expects a float vector / array as its value.
 
 		glBindVertexArray(VAO);
 		// From now on, every rendering call will use this program (thus its shaders)
