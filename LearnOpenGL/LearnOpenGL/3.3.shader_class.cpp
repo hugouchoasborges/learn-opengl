@@ -94,6 +94,8 @@ int main()
 
         // render the triangle
         ourShader.use();
+        ourShader.setFloat("someUniform", 1.0f);
+
         glBindVertexArray(VAO);
         glDrawArrays(GL_TRIANGLES, 0, 3);
 
